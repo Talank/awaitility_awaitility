@@ -1,37 +1,36 @@
 name: CI
 
 on:
-  pull_request:
-    branches:
-      - master
-  push:
-    branches:
-      - master
-
+  workflow_dispatch:
 jobs:
   build:
     strategy:
       matrix:
         include:
-            - java: '8'
-              maven-args: '-P osgi-tests,kotlin'
-            - java: '11'
-              maven-args: ''
-            - java: '17'
-              maven-args: '-P modern-jvm'
-            - java: '21'
-              maven-args: '-P modern-jvm'
-            - java: '25'
-              maven-args: "-P modern-jvm -pl '!awaitility-groovy'"
+          - java: '8'
+            maven-args: '-P osgi-tests,kotlin'
+          - java: '11'
+            maven-args: ''
+          - java: '17'
+            maven-args: '-P modern-jvm'
+          - java: '21'
+            maven-args: '-P modern-jvm'
+          - java: '25'
+            maven-args: "-P modern-jvm -pl '!awaitility-groovy'"
 
-    runs-on: 'ubuntu-latest'
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+      fail-fast: false
+    runs-on: '${{ matrix.os }}'
     steps:
-    - uses: actions/checkout@main
-    - name: Set up JDK
-      uses: actions/setup-java@main
-      with:
-        java-version: ${{ matrix.java }}
-        distribution: 'zulu'
-        cache: 'maven'
-    - name: Build
-      run: mvn --no-transfer-progress -B clean install ${{ matrix.maven-args }}
+      - uses: actions/checkout@main
+      - name: Set up JDK
+        uses: actions/setup-java@main
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'zulu'
+          cache: 'maven'
+      - name: Build
+        run: mvn --no-transfer-progress -B clean install ${{ matrix.maven-args }}
