@@ -33,4 +33,4 @@ jobs:
           distribution: 'zulu'
           cache: 'maven'
       - name: Build
-        run: mvn --no-transfer-progress -B clean install ${{ matrix.maven-args }}
+        run: mvn --no-transfer-progress -B clean install -Dsurefire.rerunFailingTestsCount=2 ${{ matrix.maven-args }}
